@@ -13,8 +13,14 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script type="text/babel">
     let rootElement = document.getElementById("root");
-    let reactElement = React.createElement("h2",null,"Masai");
-    ReactDOM.createRoot(rootElement).render(reactElement)
+    const institute = "Masai"
+    let Element = (
+        <>
+        <p>Institute name is {institute}</p>
+        </>
+
+    );
+    ReactDOM.createRoot(rootElement).render(Element)
 
 </script>
 </html>
