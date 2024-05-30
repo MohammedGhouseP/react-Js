@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Color</title>
+
+    <style>
+      .Color-picker-container{
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+      }
+      .Color-display{
+        height: 300px;
+        width: 300px;
+        border: 3px solid black;
+        border-radius: 20px;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        font-size: 20px;
+      }
+    </style>
+
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://www.unpkg.com/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://www.unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    let rootElement = document.getElementById("root");
+    function ColorPicker() {
+      const [color, setColor] = React.useState("#FFFFFF");
+
+      function handleColorChange(e){
+        setColor(e.target.value)
+      }
+
+      return(
+        <>
+          <div className="Color-picker-container">
+            <h1>Color Picker</h1>
+            <div className="Color-display" style={{backgroundColor:color}}>
+              <p>Selected color: {color}</p>
+              </div>
+              <label for="">Select a color </label>
+              <input type="color" value={color} onChange={handleColorChange} />
+            </div>
+        </>
+      )
+    }
+    function App() {
+      return (
+        <>
+        <ColorPicker />
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(rootElement).render(<App />);
+  </script>
+</html>
