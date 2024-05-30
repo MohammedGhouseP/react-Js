@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Template</title>
+  </head>
+  <style>
+    .app-cont {
+      text-align: center;
+    }
+    .que {
+      background-color: gray;
+      padding: 10px;
+      border-color: white;
+      color: white;
+      border-radius: 20px;
+    }
+    ul {
+      list-style: none;
+    }
+    ul li:hover {
+      background-color: rgb(89, 46, 46);
+    }
+    li {
+      padding: 10px;
+      border: 3px solid white;
+      border-radius: 20px;
+      margin: 10px;
+    }
+  </style>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://www.unpkg.com/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://www.unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    let rootElement = document.getElementById("root");
+
+    function Quiz() {
+      const [score, setScore] = React.useState(0);
+      const [question, setQuestion] = React.useState(0);
+
+      const questions = [
+        {
+          questionText: "What is the capital of France?",
+          options: [
+            { id:0,answerText: "Berlin", isCorrect: false },
+            { id:1,answerText: "Madrid", isCorrect: false },
+            { id:2,answerText: "Paris", isCorrect: true },
+            { id:3,answerText: "Lisbon", isCorrect: false },
+          ],
+        },
+        {
+          questionText: "Which planet is known as the Red Planet?",
+          options: [
+            { id:0,answerText: "Earth", isCorrect: false },
+            { id:1,answerText: "Mars", isCorrect: true },
+            { id:2,answerText: "Jupiter", isCorrect: false },
+            { id:3,answerText: "Saturn", isCorrect: false },
+          ],
+        },
+        {
+          questionText: 'Who wrote "Hamlet"?',
+          options: [
+            { id:0,answerText: "Charles Dickens", isCorrect: false },
+            { id:1,answerText: "William Shakespeare", isCorrect: true },
+            { id:2,answerText: "Jane Austen", isCorrect: false },
+            { id:3,answerText: "Mark Twain", isCorrect: false },
+          ],
+        },
+      ];
+
+         
+      const optionClicked =(isCorrect)=>{
+        console.log(isCorrect)
+        if(isCorrect){
+          setScore(score+1);
+        }
+
+        if(question+1 < questions.length){
+
+          setQuestion(question+1)
+        }else{
+          score(true)
+        }
+      }
+
+      return (
+        <>
+          <h1>Quiz</h1>
+          <h2>Score:{score}</h2>
+          <div className="que">
+            <h3>
+              Question {question + 1} out of {questions.length}
+            </h3>
+            <h3> {questions[question].questionText}</h3>
+            <ul>
+              {questions[question].options.map((option) => {
+                return <li onClick={(()=>optionClicked(option.isCorrect))}  key={option.id}>{option.answerText}</li>;
+              })}
+            </ul>
+          </div>
+        </>
+      );
+    }
+    function App() {
+      return (
+        <div className="app-cont">
+          <Quiz />
+        </div>
+      );
+    }
+    ReactDOM.createRoot(rootElement).render(<App />);
+  </script>
+</html>
