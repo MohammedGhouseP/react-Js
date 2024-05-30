@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamic Template</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://www.unpkg.com/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://www.unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    let rootElement = document.getElementById("root");
+
+    function Dynamic() {
+      const [inputData, setInputData] = React.useState([{ value: "h" }]);
+
+      function handleChange(e, i) {
+        let arr = [...inputData]
+        arr[i].value = e.target.value
+        //   inputData[i].value = e.target.value;  this si immutable because in useState values are cannot be change directly
+          setInputData(arr)
+       }
+
+      function AddHobbies() {
+        setInputData([...inputData, { value: "" }]);
+      }
+
+      function handleRemove(){
+        let filterData = inputData.filter((ele,index)=>{
+            return index !=1
+        })
+        setInputData(filterData)
+      }
+
+      return (
+        <>
+          {inputData.map((el, i) => {
+            return (
+              <div key={i}>
+                <input value={el.value} onChange={(e) => handleChange(e, i)} />
+                <button onClick={AddHobbies}>Add</button>
+                <button onClick={()=> handleRemove(i)}>Remove</button>
+              </div>
+            );
+          })}
+        </>
+      );
+    }
+    function App() {
+      return (
+        <>
+          <Dynamic />
+        </>
+      );
+    }
+    ReactDOM.createRoot(rootElement).render(<App />);
+  </script>
+</html>
