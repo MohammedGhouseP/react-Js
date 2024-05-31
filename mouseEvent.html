@@ -3,10 +3,63 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fetching and display</title>
+    <title>Task Manager</title>
 
-  
-//ok edited
+    <style>
+      .task-manager {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .task-form {
+        margin-bottom: 20px;
+      }
+
+      .task-form input {
+        margin-right: 10px;
+        padding: 5px;
+      }
+
+      .task-form button {
+        padding: 5px 10px;
+      }
+
+      .filters {
+        margin-bottom: 20px;
+      }
+
+      .filters input {
+        padding: 5px;
+        margin-left: 10px;
+      }
+
+      .task-list {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .task {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+      }
+
+      .task input[type="text"] {
+        margin-right: 10px;
+        padding: 5px;
+      }
+
+      .task button {
+        margin-left: 10px;
+        padding: 5px 10px;
+      }
+    </style>
+
   </head>
   <body>
     <div id="root"></div>
@@ -17,72 +70,141 @@
   <script type="text/babel">
     let rootElement = document.getElementById("root");
     
-//     import React, { useState, useEffect } from 'react';
-// import axios from 'axios';
+    
 
-const AdvancedComponent = () => {
-  const [data, setData] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
-  const [coords, setCoords] = React.useState({ x: 0, y: 0 });
-  const [count, setCount] = React.useState(0);
+const TaskManager = () => {
+  const [tasks, setTasks] = React.useState([]);
+  const [newTask, setNewTask] = React.useState({ title: '', isCompleted: false, assignee: '' });
+  const [filterAssignee, setFilterAssignee] = React.useState('');
+  const [showIncomplete, setShowIncomplete] = React.useState(false);
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/clientX');
-        setData(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      }
-    };
+    fetchTasks();
+  }, []);
 
-    fetchData();
+  const API_URL = 'http://localhost:3001/tasks';
 
-    const handleMouseMove = (event) => {
-      setCoords({ x: event.clientX, y: event.clientY });
-      console.log(`Mouse coordinates: X=${event.clientX}, Y=${event.clientY}`);
-    };
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get(API_URL);
+      setTasks(response.data);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+    }
+  };
 
-    window.addEventListener('mousemove', handleMouseMove);
+  const addTask = async () => {
+    try {
+      await axios.post(API_URL, newTask);
+      fetchTasks();
+      setNewTask({ title: '', isCompleted: false, assignee: '' });
+    } catch (error) {
+      console.error('Error adding task:', error);
+    }
+  };
 
-    document.title = `Count: ${count}`;
+  const updateTask = async (id, updatedTask) => {
+    try {
+      await axios.put(`${API_URL}/${id}`, updatedTask);
+      fetchTasks();
+    } catch (error) {
+      console.error('Error updating task:', error);
+    }
+  };
 
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, [count]); 
+  const deleteTask = async (id) => {
+    try {
+      await axios.delete(`${API_URL}/${id}`);
+      fetchTasks();
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewTask({ ...newTask, [name]: value });
+  };
+
+  const handleFilterChange = (e) => {
+    setFilterAssignee(e.target.value);
+  };
+
+  const filteredTasks = tasks.filter(task =>
+    (!showIncomplete || !task.isCompleted) &&
+    (!filterAssignee || task.assignee.toLowerCase().includes(filterAssignee.toLowerCase()))
+  );
 
   return (
-    <div className="advanced-component">
-      <h1>Advanced Component</h1>
-      <div>
-        <h2>Fetched Data</h2>
-        {loading ? <p>Loading...</p> : (
-          <ul>
-            {data.map(item => (
-              <li key={item.id}>{item.title}</li>
-            ))}
-          </ul>
-        )}
+    <div className="task-manager">
+      <h1>Task Manager</h1>
+      <div className="task-form">
+        <input
+          type="text"
+          name="title"
+          placeholder="Task title"
+          value={newTask.title}
+          onChange={handleInputChange}
+        />
+        <input
+          type="text"
+          name="assignee"
+          placeholder="Assignee"
+          value={newTask.assignee}
+          onChange={handleInputChange}
+        />
+        <label>
+          <input
+            type="checkbox"
+            name="isCompleted"
+            checked={newTask.isCompleted}
+            onChange={() => setNewTask({ ...newTask, isCompleted: !newTask.isCompleted })}
+          />
+          Completed
+        </label>
+        <button onClick={addTask}>Add Task</button>
       </div>
-      <div>
-        <h2>Mouse Movement</h2>
-        <p>Move your mouse around!</p>
-        <p>Current coordinates: X={coords.x}, Y={coords.y}</p>
+      <div className="filters">
+        <button onClick={fetchTasks}>Get All Tasks</button>
+        <button onClick={() => setShowIncomplete(!showIncomplete)}>
+          {showIncomplete ? 'Show All Tasks' : 'Show Incomplete Tasks'}
+        </button>
+        <input
+          type="text"
+          placeholder="Filter by assignee"
+          value={filterAssignee}
+          onChange={handleFilterChange}
+        />
       </div>
-      <div>
-        <h2>Update Document Title</h2>
-        <p>Current count: {count}</p>
-        <button onClick={() => setCount(count + 1)}>Increment Count</button>
+      <div className="task-list">
+        {filteredTasks.map(task => (
+          <div key={task.id} className="task">
+            <input
+              type="text"
+              value={task.title}
+              onChange={(e) => updateTask(task.id, { ...task, title: e.target.value })}
+            />
+            <input
+              type="text"
+              value={task.assignee}
+              onChange={(e) => updateTask(task.id, { ...task, assignee: e.target.value })}
+            />
+            <label>
+              <input
+                type="checkbox"
+                checked={task.isCompleted}
+                onChange={() => updateTask(task.id, { ...task, isCompleted: !task.isCompleted })}
+              />
+              Completed
+            </label>
+            <button onClick={() => deleteTask(task.id)}>Delete</button>
+          </div>
+        ))}
       </div>
+
     </div>
   );
 };
-
-
-
-    ReactDOM.createRoot(rootElement).render(<AdvancedComponent />);
+    ReactDOM.createRoot(rootElement).render(<TaskManager />);
   </script>
 </html>
