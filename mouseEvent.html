@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fetching and display</title>
+    <title>Task Manager</title>
 
     <style>
       .task-manager {
@@ -70,8 +70,7 @@
   <script type="text/babel">
     let rootElement = document.getElementById("root");
     
-    import , { useState, useEffect } from 'react';
-import axios from 'axios';
+    
 
 const TaskManager = () => {
   const [tasks, setTasks] = React.useState([]);
@@ -206,11 +205,6 @@ const TaskManager = () => {
     </div>
   );
 };
-
-
-
-
-
     ReactDOM.createRoot(rootElement).render(<TaskManager />);
   </script>
 </html>
