@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fetching and display</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://www.unpkg.com/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://www.unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script type="text/babel">
+    const AdvancedComponent = () => {
+      const [data, setData] = React.useState([]);
+      const [loading, setLoading] = React.useState(true);
+      const [coords, setCoords] = React.useState({ x: 0, y: 0 });
+      const [count, setCount] = React.useState(0);
+
+      React.useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
+            setData(response.data);
+            setLoading(false);
+          } catch (error) {
+            console.error('Error fetching data:', error);
+            setLoading(false);
+          }
+        };
+
+        fetchData();
+
+        const handleMouseMove = (event) => {
+          setCoords({ x: event.clientX, y: event.clientY });
+          console.log(`Mouse coordinates: X=${event.clientX}, Y=${event.clientY}`);
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+
+        document.title = `Count: ${count}`;
+
+        return () => {
+          window.removeEventListener('mousemove', handleMouseMove);
+        };
+      }, [count]);
+
+      const styles = {
+        body: {
+          fontFamily: 'Arial',
+          margin: 0,
+          padding: 0,
+          backgroundColor: '#f4f4f4',
+        },
+        container: {
+          maxWidth: '800px',
+          margin: '20px auto',
+          padding: '20px',
+          backgroundColor: '#fff',
+          boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+          borderRadius: '8px',
+        },
+        heading: {
+          color: '#333',
+        },
+        list: {
+          listStyleType: 'none',
+          padding: 0,
+        },
+        listItem: {
+          padding: '8px',
+          margin: '4px 0',
+          backgroundColor: '#e9e9e9',
+          borderRadius: '4px',
+        },
+        button: {
+          padding: '10px 15px',
+          backgroundColor: '#007bff',
+          color: 'white',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: 'pointer',
+          fontSize: '16px',
+        },
+        buttonHover: {
+          backgroundColor: '#0056b3',
+        },
+      };
+
+      return (
+        <div style={styles.container}>
+          <h1 style={styles.heading}>Advanced Component</h1>
+          <div>
+            <h2 style={styles.heading}>Fetched Data</h2>
+            {loading ? (
+              <p>Loading...</p>
+            ) : (
+              <ul style={styles.list}>
+                {data.map(item => (
+                  <li key={item.id} style={styles.listItem}>{item.title}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <div>
+            <h2 style={styles.heading}>Mouse Movement</h2>
+            <p>Move your mouse around!</p>
+            <p>Current coordinates: X={coords.x}, Y={coords.y}</p>
+          </div>
+          <div>
+            <h2 style={styles.heading}>Update Document Title</h2>
+            <p>Current count: {count}</p>
+            <button
+              style={styles.button}
+              onMouseEnter={e => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
+              onMouseLeave={e => (e.target.style.backgroundColor = styles.button.backgroundColor)}
+              onClick={() => setCount(count + 1)}
+            >
+              Increment Count
+            </button>
+          </div>
+        </div>
+      );
+    };
+
+    let rootElement = document.getElementById("root");
+    ReactDOM.createRoot(rootElement).render(<AdvancedComponent />);
+  </script>
+</html>
